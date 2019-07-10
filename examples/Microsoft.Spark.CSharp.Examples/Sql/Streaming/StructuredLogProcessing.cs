@@ -5,19 +5,36 @@ using Microsoft.Spark.Sql;
 using static Microsoft.Spark.Sql.Functions;
 using System.Text.RegularExpressions;
 
-namespace SampleSparkProject
+namespace Microsoft.Spark.Examples.Sql.Streaming
 {
-    class Program
+    /// <summary>
+    /// Example of analyzing log entries as they are entered live.
+    /// Basis for streaming taken/modified from
+    /// spark/examples/src/main/python/sql/streaming/structured_kafka_wordcount.py
+    /// </summary>
+    internal sealed class StructuredLogProcessing : IExample 
     {
-        static void Main(string[] args)
+        public void Run(string[] args)
         {
+            string hostname;
+            var port;
+
+            if(args.Length != 2)
+            {
+                Console.WriteLine("Usage: StructuredLogProcessing <hostname> <port>. Will use hostname = localhost, port = 9999.");
+                hostname = "localhost";
+                port = 9999;
+            }
+            else 
+            {
+                hostname = args[0];
+                port = args[1];
+            }
+
             SparkSession spark = SparkSession
                 .Builder()
-                .AppName("StreamingTest")
+                .AppName("StructuredLogProcessing")
                 .GetOrCreate();
-            
-            string hostname = "localhost";
-            var port = 9999;
 
             DataFrame words = spark.ReadStream().Format("socket").Option("host", hostname).Option("port", port).Load();
             // Split the "value" column on space and explode to get one word per row.
