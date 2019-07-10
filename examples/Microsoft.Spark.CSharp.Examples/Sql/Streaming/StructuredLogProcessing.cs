@@ -1,3 +1,6 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 using System;
 using System.Collections.Generic;
@@ -16,19 +19,18 @@ namespace Microsoft.Spark.Examples.Sql.Streaming
     {
         public void Run(string[] args)
         {
-            string hostname;
-            var port;
+            string hostname = "localhost";
+            var port = 9999;
 
-            if(args.Length != 2)
+            // If user entered host and port info of their updating logs in the command line, update the variables
+            if(args.Length == 2)
             {
-                Console.WriteLine("Usage: StructuredLogProcessing <hostname> <port>. Will use hostname = localhost, port = 9999.");
-                hostname = "localhost";
-                port = 9999;
+                hostname = args[0];
+                port = int.Parse(args[1]);
             }
             else 
             {
-                hostname = args[0];
-                port = args[1];
+                Console.WriteLine("Usage: StructuredLogProcessing <hostname> <port>. Will use hostname = localhost, port = 9999.");
             }
 
             SparkSession spark = SparkSession
@@ -36,48 +38,41 @@ namespace Microsoft.Spark.Examples.Sql.Streaming
                 .AppName("StructuredLogProcessing")
                 .GetOrCreate();
 
-            DataFrame words = spark.ReadStream().Format("socket").Option("host", hostname).Option("port", port).Load();
-            // Split the "value" column on space and explode to get one word per row.
-            //DataFrame words = lines.Select(Explode(Split(lines["value"], " "))
-                                    //.Alias("logline"));
+            DataFrame words = spark
+                .ReadStream()
+                .Format("socket")
+                .Option("host", hostname)
+                .Option("port", port)
+                .Load();
             
-            //DataFrame wordCounts = words.GroupBy("word").Count();
-            // Log streaming!!!
-            // If get a string (log?????), analyze with regex
-            //spark.Udf().Register<string?, string?>("MyUDF", (input) => (input is string) ? StringRegTest(input) : input*2);
-            spark.Udf().Register<string, bool>("MyUDF", input => StringRegTest(input));
+            // Register a UDF to be run on each incoming line from the stream 
+            spark.Udf().Register<string, bool>("MyUDF", input => ValidLogTest(input));
             words.CreateOrReplaceTempView("WordsEdit");
-            DataFrame sqlDf = spark.Sql("SELECT WordsEdit.value, MyUDF(WordsEdit.value) FROM WordsEdit"); // print original and edited
+            DataFrame sqlDf = spark.Sql("SELECT WordsEdit.value, MyUDF(WordsEdit.value) FROM WordsEdit"); 
 
-            // nc -vvv -l -p 9999	
-            //Microsoft.Spark.Sql.Streaming.StreamingQuery query = wordCounts
+            // With each incoming line, test if it's a valid log entry and output result
             Microsoft.Spark.Sql.Streaming.StreamingQuery query = sqlDf
                                                                 .WriteStream()
-                                                                //.OutputMode("Append")
-                                                                //.OutputMode("complete") // Complete only viable if using aggregation ***MAKES A LOT FASTER/ENTER TRIGGERS NEW BATCH
                                                                 .Format("console")
                                                                 .Start();
             query.AwaitTermination();
 
-        } // main
+        } 
 
-        public static bool StringRegTest(string logLine)
+        public static bool ValidLogTest(string logLine)
         {
-            //Regex rx = new Regex("\\b(?=67)\\b"); // Any BSSID that contains 67
-            //Regex rx = new Regex("^(?=1c)"); // BSSID that starts with 1c (not just contains 1c)
-
+            // Regex for user logs taken from Databricks Spark Reference Applications: https://databricks.gitbooks.io 
             Regex rx = new Regex("^(\\S+) (\\S+) (\\S+) \\[([\\w:/]+\\s[+\\-]\\d{4})\\] \"(\\S+) (\\S+) (\\S+)\" (\\d{3}) (\\d+)");
 
             if(logLine != null && rx.IsMatch(logLine))
             {
-                //Console.WriteLine(logLine);
-                // Valid example: 64.242.88.10 - - [07/Mar/2004:16:47:12 -0800] "GET /robots.txt HTTP/1.1" 200 68
+                // Valid log example: 64.242.88.10 - - [07/Mar/2004:16:47:12 -0800] "GET /robots.txt HTTP/1.1" 200 68
                 Console.WriteLine("Congrats, \"" + logLine + "\" is a valid log line!");
                 return true;
             }
             else
             {
-                // Invalid example: 64.242.88.10 - - [07/Mar/2004:16:47:12 -0800] "GET /robots.txt HTTP/1.1" 200 aa68
+                // Invalid log example: 64.242.88.10 - - [07/Mar/2004:16:47:12 -0800] "GET /robots.txt HTTP/1.1" 200 aa68
                 Console.WriteLine("Invalid Log Line");
                 return false;
             }
