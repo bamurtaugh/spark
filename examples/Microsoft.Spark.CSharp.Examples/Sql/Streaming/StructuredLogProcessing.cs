@@ -77,7 +77,6 @@ namespace Microsoft.Spark.Examples.Sql.Streaming
                 return false;
             }
         }
-
     }
 }
                 
