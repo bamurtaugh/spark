@@ -45,7 +45,7 @@ namespace Microsoft.Spark.Examples.Sql.Streaming
                 .Option("port", port)
                 .Load();
             
-            // Register a UDF to be run on each incoming line from the stream 
+            // Register a UDF to be run on each incoming entry from the stream 
             spark.Udf().Register<string, bool>("MyUDF", input => ValidLogTest(input));
             words.CreateOrReplaceTempView("WordsEdit");
             DataFrame sqlDf = spark.Sql("SELECT WordsEdit.value, MyUDF(WordsEdit.value) FROM WordsEdit"); 
@@ -66,14 +66,14 @@ namespace Microsoft.Spark.Examples.Sql.Streaming
 
             if(logLine != null && rx.IsMatch(logLine))
             {
-                // Valid log example: 64.242.88.10 - - [07/Mar/2004:16:47:12 -0800] "GET /robots.txt HTTP/1.1" 200 68
-                Console.WriteLine("Congrats, \"" + logLine + "\" is a valid log line!");
+                // Valid entry example: 64.242.88.10 - - [07/Mar/2004:16:47:12 -0800] "GET /robots.txt HTTP/1.1" 200 68
+                Console.WriteLine("Congrats, \"" + logLine + "\" is a valid log entry!");
                 return true;
             }
             else
             {
-                // Invalid log example: 64.242.88.10 - - [07/Mar/2004:16:47:12 -0800] "GET /robots.txt HTTP/1.1" 200 aa68
-                Console.WriteLine("Invalid Log Line");
+                // Invalid entry example: 64.242.88.10 - - [07/Mar/2004:16:47:12 -0800] "GET /robots.txt HTTP/1.1" 200 aa68
+                Console.WriteLine("Invalid Log Entry");
                 return false;
             }
         }
