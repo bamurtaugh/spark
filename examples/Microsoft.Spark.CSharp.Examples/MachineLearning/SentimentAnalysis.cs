@@ -38,6 +38,7 @@ namespace Microsoft.Spark.Examples.MachineLearning
             DataFrame df = spark.Read().Csv(args[0]);
             df.Show();
 
+            // Use ML.NET to evaluate each review 
             spark.Udf().Register<string, bool>("MLudf", (text) => Sentiment(text));
             df.CreateOrReplaceTempView("Reviews");
             DataFrame sqlDf = spark.Sql("SELECT _c0, MLudf(_c0) FROM Reviews");
@@ -46,10 +47,10 @@ namespace Microsoft.Spark.Examples.MachineLearning
             spark.Stop();
         }
 
+        // To use ML.NET sure have ProjectReference in .csproj file:
+        // Include="<path to sentimentML.Model.csproj>"
         public static bool Sentiment(string text)
         {
-            // To use ML.NET sure have ProjectReference in .csproj file:
-            // Include="<path to sentimentML.Model.csproj>"
             MLContext mlContext = new MLContext();
             ITransformer mlModel = mlContext.Model.Load("MLModel.zip", out var modelInputSchema);
             var predEngine = mlContext.Model.CreatePredictionEngine<Review, ReviewPrediction>(mlModel);
@@ -58,15 +59,20 @@ namespace Microsoft.Spark.Examples.MachineLearning
             return result.Prediction;
         }
 
+        // Class to represent each review
         public class Review
         {
+            // Column names must match input file
+            // Column1 is review
             [LoadColumn(0)]
             public string Column1;
 
+            // Column2 is sentiment (1 = positive, 0 = negative)
             [LoadColumn(1), ColumnName("Column2")]
             public bool Column2;
         }
 
+        // Class resulting from ML.NET code including predictions about review
         public class ReviewPrediction : Review
         {
 

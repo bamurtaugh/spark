@@ -16,7 +16,10 @@ the .NET for Apache Spark application.
 
 ## ML.NET
 
-### Download Dataset
+### Download Datasets
+
+yelp_labelled for training
+amazon for testing
 
 ### Download and Use Model Builder
 
