@@ -1,4 +1,4 @@
-# Sentiment Analysis and Big Data
+# Sentiment Analysis with Big Data
 
 In this sample, you'll see how to use [.NET for Apache Spark](https://dotnet.microsoft.com/apps/data/spark) 
 and [ML.NET](https://dotnet.microsoft.com/apps/machinelearning-ai/ml-dotnet) to determine if 
@@ -6,8 +6,8 @@ statements are positive or negative, a task known as **sentiment analysis**.
 
 ## Problem
 
-Our goal here is to determine if online Amazon reviews are positive or negative. We will be using ML.NET to perform
-**binary classification** since categorizing reviews involves choosing one of two groups: positive or negative.
+Our goal here is to determine if online reviews are positive or negative. We will be using ML.NET to perform
+**binary classification** since categorizing reviews involves choosing one of two groups: positive or negative. You can read more about the problem through the [ML.NET documentation](https://docs.microsoft.com/en-us/dotnet/machine-learning/tutorials/sentiment-analysis).
 
 ## Solution
 
@@ -24,8 +24,7 @@ Download the [UCI Sentiment Labeled Sentences dataset ZIP file](https://archive.
 
 Model Builder helps you easily train and use ML models in Visual Studio. Follow the [Model Builder Getting Started Guide](https://dotnet.microsoft.com/learn/machinelearning-ai/ml-dotnet-get-started-tutorial/intro).
 
-Use the amazon file to train your model using the sentiment analysis scenario. You may find it easiest to load the data file into
-an application like Excel and convert it to a .csv instead of .txt.
+Use the amazon file to train your model using the sentiment analysis scenario. To easily work with the same data files in both Spark.NET and ML.NET, you may find it easiest to load the data file into an application like Excel, convert it to a .csv instead of .txt, and introduce column names.
 
 In the last step after training your model with model builder, you can generate a zip file containing the ML.NET code you need to use in your Spark app.
 
@@ -55,10 +54,12 @@ SparkSession spark = SparkSession
 
 ### Read Input File into a DataFrame
 
-Choose the input file you would like to perform sentiment analysis on. In machine learning, we have a *training* and a *testing* phase. We trained our model with the amazon data (which we converted to a .csv). We can perform testing (actually evaluating new data and seeing how accurate our trained model is) with the yelp dataset. In order to read into a DataFrame and establish the columns more easily, convert the yelp dataset into a csv (such as by importing it into Excel). 
+Choose the input file you would like to perform sentiment analysis on. In machine learning, we have a *training* and a *testing* phase. We trained our model with the amazon data (which we converted to a .csv). We can perform testing (actually evaluating new data and seeing how accurate our trained model is) with the yelp dataset. 
+
+In order to read into a DataFrame and establish the columns more easily, we converted the yelp dataset into a csv (as we did with the amazon data). 
 
 ```CSharp
-DataFrame df = spark.Read().Csv(<Path to reviews data set>);
+DataFrame df = spark.Read().Csv(<Path to yelp data set>);
 ```
 
 ### Use UDF to Access ML.NET
