@@ -90,10 +90,13 @@ Choose how to display your stream, whether it's through ```DataFrame.WriteStream
 within a method called by your UDF. When using ```DataFrame.WriteStream()```, you can establish some other characteristics of your output,
 like where it should be printed and if all of the output or just the most recent batch's output should be displayed.
 
-## Running Your Code
+## Running Your Code & Next Steps
 
-Structured streaming in Spark processes data through a series of small **batches**. In our example, when you hit *enter* after
-entering data in the command prompt, Spark will consider that a batch and run the UDF.
+Structured streaming in Spark processes data through a series of small **batches**. 
+When you run your program, the command prompt where we established the netcat will allow you to start typing.
+In our example, when you hit *enter* after entering data in the command prompt, Spark will consider that a batch and run the UDF. 
+
+![StreamingOutput](url)
 
 View the full coding example to see an example of analyzing log data live as it comes in. Try modifying the regular expressions and 
 reading in the Apache error log files to gain further practice with log processing in .NET for Apache Spark.
