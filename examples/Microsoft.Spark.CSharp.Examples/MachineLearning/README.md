@@ -6,38 +6,33 @@ statements are positive or negative, a task known as **sentiment analysis**.
 
 ## Problem
 
-Our goal here is to determine if online reviews are positive or negative. We'll be using ML.NET to perform
-**binary classification** since categorizing reviews involves choosing one of two groups: positive or negative. You can read more about the problem through the [ML.NET documentation](https://docs.microsoft.com/en-us/dotnet/machine-learning/tutorials/sentiment-analysis).
+Our goal here is to determine if online reviews are positive or negative. We'll be using .NET for Apache Spark to read in a dataset of reviews and ML.NET to perform **binary classification** since categorizing reviews involves choosing one of two groups: positive or negative. You can read more about the problem through the [ML.NET documentation](https://docs.microsoft.com/en-us/dotnet/machine-learning/tutorials/sentiment-analysis).
 
 ## Solution
 
-We will first train an ML model using ML.NET. We'll then create a Spark application and add in our ML.NET work.
+We'll first train an ML model using ML.NET, and then we'll create a new application that uses both .NET for Apache Spark and ML.NET.
 
 ## ML.NET
 
 ### 1. Download Datasets
 
-We'll be using the amazon and yelp files in the Datasets folder, which can be found in the [UCI Sentiment Labeled Sentences dataset](https://archive.ics.uci.edu/ml/machine-learning-databases/00331/sentiment%20labelled%20sentences.zip). 
+We'll be using a set of amazon reviews to train our model and a set of yelp reviews for testing in our Spark app. These can be found in the Datasets folder, and they come from the [UCI Sentiment Labeled Sentences](https://archive.ics.uci.edu/ml/machine-learning-databases/00331/sentiment%20labelled%20sentences.zip). 
 
 ### 2. Download and Use Model Builder
 
-Model Builder helps you easily train and use ML models in Visual Studio. Follow the [Model Builder Getting Started Guide](https://dotnet.microsoft.com/learn/machinelearning-ai/ml-dotnet-get-started-tutorial/intro).
+Model Builder helps you easily train and use ML models in Visual Studio. Follow the [Model Builder Getting Started Guide](https://dotnet.microsoft.com/learn/machinelearning-ai/ml-dotnet-get-started-tutorial/intro) to train your model using the sentiment analysis scenario.
 
-Use the amazon reviews file to train your model using the sentiment analysis scenario. 
-
-In the last step after training your model with model builder, you'll generate C# code you can use to consume your trained model in any separate apps, like the Spark app we'll be creating.
-
-![Generated Code](https://github.com/bamurtaugh/spark/blob/SparkMLNet/examples/Microsoft.Spark.CSharp.Examples/MachineLearning/images/modelbuilder5code.PNG)
-
-You'll also need the zip file containing the trained ML.NET model.
+In the last step, you'll produce a zip file containing the trained ML.NET model.
 
 ![ML.NET Zip and Files](https://github.com/bamurtaugh/spark/blob/SparkMLNet/examples/Microsoft.Spark.CSharp.Examples/MachineLearning/images/modelbuilder5proj.PNG)
 
+You'll also generate C# code you can use to consume your model in other .NET apps, like the Spark app we'll be creating.
+
+![Generated Code](https://github.com/bamurtaugh/spark/blob/SparkMLNet/examples/Microsoft.Spark.CSharp.Examples/MachineLearning/images/modelbuilder5code.PNG)
+
 ### 3. Add ML.NET to .NET for Apache Spark App
 
-We need to make sure our Spark app has the necessary ML.NET references. 
-
-Make sure you've downloaded the [Microsoft.ML NuGet Package](https://www.nuget.org/packages/Microsoft.ML). Your Spark app needs to reference the Microsoft.ML API and the .csproj file of your trained ML.NET model. 
+Make sure you've downloaded the [Microsoft.ML NuGet Package](https://www.nuget.org/packages/Microsoft.ML). Your Spark app needs to reference the Microsoft.ML API and the .csproj file of your trained ML.NET model.
 
 ![CSProject](https://github.com/bamurtaugh/spark/blob/SparkMLNet/examples/Microsoft.Spark.CSharp.Examples/MachineLearning/images/SparkMLPic.PNG)
 
@@ -73,14 +68,14 @@ We create a User Defined Function (UDF) that calls the *Sentiment* method on eac
 spark.Udf().Register<string, bool>("MLudf", (text) => Sentiment(text));
 ```
 
-The Sentiment method is where we'll call our ML.NET code. The code we're using in this method was generated from the final step of using Model Builder.
+The Sentiment method is where we'll call our ML.NET code that was generated from the final step of Model Builder.
 
 ```CSharp
 MLContext mlContext = new MLContext();
 ITransformer mlModel = mlContext.Model.Load("MLModel.zip", out var modelInputSchema);
 var predEngine = mlContext.Model.CreatePredictionEngine<Review, ReviewPrediction>(mlModel);
 ```
-You may notice the use of *Review* and *ReviewPrediction.* These are classes we have defined to represent the data we are using for training and testing. 
+You may notice the use of *Review* and *ReviewPrediction.* These are classes we define in our project to represent the review data we're evaluating. 
 
 ```CSharp
 public class Review
@@ -108,7 +103,7 @@ public class ReviewPrediction : Review
 
 ### 4. Spark SQL and Running Your Code
 
-Now that you've read in your data and incorporated your ML.NET code, use Spark SQL to call the UDF that will run sentiment analysis on each row of your DataFrame:
+Now that you've read in your data and incorporated ML, use Spark SQL to call the UDF that will run sentiment analysis on each row of your DataFrame:
 
 ```CSharp
 DataFrame sqlDf = spark.Sql("SELECT _c0, MLudf(_c0) FROM Reviews");
