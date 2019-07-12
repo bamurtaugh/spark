@@ -25,7 +25,7 @@ namespace Microsoft.Spark.Examples.MachineLearning
             if(args.Length != 1)
             {
                 Console.Error.WriteLine(
-                    "Usage: Datasource <path to Amazon review dataset>");
+                    "Usage: Datasource <path to review dataset>");
                 
                 Environment.Exit(1);
             }
