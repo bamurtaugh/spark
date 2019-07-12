@@ -42,7 +42,7 @@ To start a new connection, open a command prompt. For Linux users, run ```nc -lk
 
 Windows users can run ```nc -vvv -l -p 9999``` to connect to localhost port 9999. The result should look something like this:
 
-![NetcatConnect](examples\Microsoft.Spark.CSharp.Examples\Sql\Streaming\netconnect.PNG)
+![NetcatConnect](https://github.com/bamurtaugh/spark/blob/StreamingLog/examples/Microsoft.Spark.CSharp.Examples/Sql/Streaming/netconnect.PNG)
 
 Once the network connection is established, we will be able to connect our Spark program to it. Our program will listen for any input
 we type into our command prompt.
