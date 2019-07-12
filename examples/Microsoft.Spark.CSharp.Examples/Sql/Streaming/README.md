@@ -91,13 +91,10 @@ var query = sqlDf
       .Start();
 ```
 
-## Running Your Code & Next Steps
+### 6. Running Your Code
 
 Structured streaming in Spark processes data through a series of small **batches**. 
 When you run your program, the command prompt where we established the netcat will allow you to start typing.
 In our example, when you hit *enter* after entering data in the command prompt, Spark will consider that a batch and run the UDF. 
 
 ![StreamingOutput](https://github.com/bamurtaugh/spark/blob/StreamingLog/examples/Microsoft.Spark.CSharp.Examples/Sql/Streaming/streamingnc.PNG)
-
-View the full coding example to see an example of analyzing log data live as it comes in. Try modifying the regular expressions and 
-reading in the Apache error log files to gain further practice with log processing in .NET for Apache Spark.
