@@ -22,8 +22,7 @@ Download the [UCI Sentiment Labeled Sentences dataset ZIP file](https://archive.
 
 ### Download and Use Model Builder
 
-Model Builder helps you easily train and use ML models in Visual Studio. Follow the [Model Builder Getting Started Guide]
-(https://dotnet.microsoft.com/learn/machinelearning-ai/ml-dotnet-get-started-tutorial/intro).
+Model Builder helps you easily train and use ML models in Visual Studio. Follow the [Model Builder Getting Started Guide](https://dotnet.microsoft.com/learn/machinelearning-ai/ml-dotnet-get-started-tutorial/intro).
 
 Use the amazon file to train your model using the sentiment analysis scenario. You may find it easiest to load the data file into
 an application like Excel and convert it to a .csv instead of .txt.
