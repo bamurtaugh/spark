@@ -18,9 +18,9 @@ We'll first train an ML model using ML.NET, and then we'll create a new applicat
 
 We'll be using a set of amazon reviews to train our model and a set of yelp reviews for testing in our Spark app. These can be found in the Datasets folder, and they come from the [UCI Sentiment Labeled Sentences](https://archive.ics.uci.edu/ml/machine-learning-databases/00331/sentiment%20labelled%20sentences.zip). 
 
-### 2. Download and Use Model Builder
+### 2. Build and Train Your Model
 
-Model Builder helps you easily train and use ML models in Visual Studio. Follow the [Model Builder Getting Started Guide](https://dotnet.microsoft.com/learn/machinelearning-ai/ml-dotnet-get-started-tutorial/intro) to train your model using the sentiment analysis scenario.
+Use ML.NET to build and train a model. You can use Model Builder to easily train and use ML models in Visual Studio. Follow the [Model Builder Getting Started Guide](https://dotnet.microsoft.com/learn/machinelearning-ai/ml-dotnet-get-started-tutorial/intro) to train your model using the sentiment analysis scenario.
 
 In the last step, you'll produce a zip file containing the trained ML.NET model.
 
