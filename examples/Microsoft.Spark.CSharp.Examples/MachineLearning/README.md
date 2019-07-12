@@ -27,15 +27,14 @@ Model Builder helps you easily train and use ML models in Visual Studio. Follow 
 Use the amazon file to train your model using the sentiment analysis scenario. You may find it easiest to load the data file into
 an application like Excel and convert it to a .csv instead of .txt.
 
-In the last step after, training your model with model builder, you can generate a zip file containing the ML.NET code you need to use in your Spark app.
+In the last step after training your model with model builder, you can generate a zip file containing the ML.NET code you need to use in your Spark app.
 
 ### Add ML.NET to .NET for Apache Spark App
 
 We need to make sure our Spark app has the necessary ML.NET references. 
 
-Download the Microsoft.ML NuGet Package.
+Download the [Microsoft.ML NuGet Package](https://www.nuget.org/packages/Microsoft.ML). Make sure your Spark app has a reference to the .csproj file of your trained ML model from model builder and the Microsoft.ML API. 
 
-Make sure your Spark app has a reference to the .csproj file of your trained ML model from model builder and the Microsoft.ML API. 
 ![CSProject](https://github.com/bamurtaugh/spark/blob/SparkMLNet/examples/Microsoft.Spark.CSharp.Examples/MachineLearning/SparkMLPic.PNG)
 
 As we create the logic for our Spark app, we will paste in the code generated from model builder and include some other class definitions.
@@ -49,9 +48,9 @@ DataFrame API.
 
 ```CSharp
 SparkSession spark = SparkSession
-                .Builder()
-                .AppName("Apache User Log Processing")
-                .GetOrCreate();
+       .Builder()
+       .AppName("Apache User Log Processing")
+       .GetOrCreate();
 ```
 
 ### Read Input File into a DataFrame
@@ -69,12 +68,13 @@ Create a User Defined Function (UDF) that calls a method called *Sentiment.*
 ```CSharp
 spark.Udf().Register<string, bool>("MLudf", (text) => Sentiment(text));
 ```
+
 The Sentiment method is where we will call our ML.NET code. The code we are using in this method was generated from the final step of using Model Builder.
 
 ```CSharp
 MLContext mlContext = new MLContext();
-            ITransformer mlModel = mlContext.Model.Load("MLModel.zip", out var modelInputSchema);
-            var predEngine = mlContext.Model.CreatePredictionEngine<Review, ReviewPrediction>(mlModel);
+ITransformer mlModel = mlContext.Model.Load("MLModel.zip", out var modelInputSchema);
+var predEngine = mlContext.Model.CreatePredictionEngine<Review, ReviewPrediction>(mlModel);
 ```
 You may notice the use of *Review* and *ReviewPrediction.* These are classes we have defined to represent the data we are using for training and testing. 
 
