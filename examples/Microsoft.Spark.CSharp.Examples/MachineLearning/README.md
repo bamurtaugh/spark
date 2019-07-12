@@ -16,11 +16,11 @@ the .NET for Apache Spark application.
 
 ## ML.NET
 
-### Download Datasets
+### 1. Download Datasets
 
 Download the [UCI Sentiment Labeled Sentences dataset ZIP file](https://archive.ics.uci.edu/ml/machine-learning-databases/00331/sentiment%20labelled%20sentences.zip). We will be using the yelp_labelled and amazon_cells_labelled files.
 
-### Download and Use Model Builder
+### 2. Download and Use Model Builder
 
 Model Builder helps you easily train and use ML models in Visual Studio. Follow the [Model Builder Getting Started Guide](https://dotnet.microsoft.com/learn/machinelearning-ai/ml-dotnet-get-started-tutorial/intro).
 
@@ -28,7 +28,7 @@ Use the amazon file to train your model using the sentiment analysis scenario. T
 
 In the last step after training your model with model builder, you can generate a zip file containing the ML.NET code you need to use in your Spark app.
 
-### Add ML.NET to .NET for Apache Spark App
+### 3. Add ML.NET to .NET for Apache Spark App
 
 We need to make sure our Spark app has the necessary ML.NET references. 
 
@@ -40,7 +40,7 @@ As we create the logic for our Spark app, we will paste in the code generated fr
 
 ## Spark.NET
 
-### Create a Spark Session
+### 1. Create a Spark Session
 
 In any Spark application, we must establish a new SparkSession, which is the entry point to programming Spark with the Dataset and 
 DataFrame API.
@@ -52,7 +52,7 @@ SparkSession spark = SparkSession
        .GetOrCreate();
 ```
 
-### Read Input File into a DataFrame
+### 2. Read Input File into a DataFrame
 
 Choose the input file you would like to perform sentiment analysis on. In machine learning, we have a *training* and a *testing* phase. We trained our model with the amazon data (which we converted to a .csv). We can perform testing (actually evaluating new data and seeing how accurate our trained model is) with the yelp dataset. 
 
@@ -62,7 +62,7 @@ In order to read into a DataFrame and establish the columns more easily, we conv
 DataFrame df = spark.Read().Csv(<Path to yelp data set>);
 ```
 
-### Use UDF to Access ML.NET
+### 3. Use UDF to Access ML.NET
 
 Create a User Defined Function (UDF) that calls a method called *Sentiment.* 
 
@@ -103,7 +103,7 @@ public class ReviewPrediction : Review
 } 
 ```
 
-### Spark SQL and Running Your Code
+### 4. Spark SQL and Running Your Code
 
 Now that you've read in your data and incorporated your ML.NET code, use Spark SQL to call the UDF that will run sentiment analysis on each row of your DataFrame.
 
