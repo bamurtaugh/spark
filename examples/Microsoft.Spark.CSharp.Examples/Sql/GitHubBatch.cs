@@ -8,12 +8,15 @@ namespace mySparkAppAdv
     {
         static void Main(string[] args)
         {
-            SparkSession spark = SparkSession.Builder().AppName("GitHub and Spark Batch").GetOrCreate();
+            SparkSession spark = SparkSession
+                .Builder()
+                .AppName("GitHub and Spark Batch")
+                .GetOrCreate();
             
 	          DataFrame projectsDf = spark
                 .Read()
                 .Schema("id INT, url STRING, owner_id INT, name STRING, descriptor STRING, language STRING, created_at STRING, forked_from INT, deleted STRING, updated_at STRING")
-		            .Csv("projects_smaller.csv");
+		        .Csv("projects_smaller.csv");
             
             projectsDf.Show();
 
