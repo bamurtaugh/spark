@@ -5,13 +5,8 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Spark.Sql;
-using static Microsoft.Spark.Sql.Functions;
 using Microsoft.ML;
 using Microsoft.ML.Data;
-using static Microsoft.ML.DataOperationsCatalog;
-using Microsoft.ML.Trainers;
-using Microsoft.ML.Transforms.Text;
-using static Microsoft.ML.Transforms.NormalizingEstimator;
 
 namespace Microsoft.Spark.Examples.MachineLearning
 {
@@ -32,18 +27,35 @@ namespace Microsoft.Spark.Examples.MachineLearning
 
             SparkSession spark = SparkSession
                 .Builder()
-                .AppName(".NET Spark Logging Example")
+                .AppName(".NET Spark Sentiment Analysis")
                 .GetOrCreate();
 
-            DataFrame df = spark.Read().Csv(args[0]);
+            DataFrame df = spark
+                .Read()
+                .Option("header", true)
+                .Option("inferSchema", true)
+                .Csv(args[0]);
             df.Show();
 
             // Use ML.NET to evaluate each review 
             spark.Udf().Register<string, bool>("MLudf", (text) => Sentiment(text));
             df.CreateOrReplaceTempView("Reviews");
-            DataFrame sqlDf = spark.Sql("SELECT _c0, MLudf(_c0) FROM Reviews");
+            DataFrame sqlDf = spark.Sql("SELECT Column1, MLudf(Column1) FROM Reviews");
             sqlDf.Show();
-           
+
+            // Print out first 20 rows of data
+            // Prevents data getting cut off (as it is when we print a DF)
+            IEnumerable<Row> rows = sqlDf.Collect();
+            int counter = 0;
+            foreach (Row row in rows)
+            {
+                counter++;
+                if (counter < 20)
+                    Console.WriteLine(row);
+                else
+                    break;
+            }
+
             spark.Stop();
         }
 
@@ -55,7 +67,7 @@ namespace Microsoft.Spark.Examples.MachineLearning
             ITransformer mlModel = mlContext.Model.Load("MLModel.zip", out var modelInputSchema);
             var predEngine = mlContext.Model.CreatePredictionEngine<Review, ReviewPrediction>(mlModel);
 
-            var result = predEngine.Predict(new Review {Column1 = text});
+            var result = predEngine.Predict(new Review { Column1 = text });
             return result.Prediction;
         }
 
@@ -68,8 +80,8 @@ namespace Microsoft.Spark.Examples.MachineLearning
             public string Column1;
 
             // Column2 is sentiment (1 = positive, 0 = negative)
-            [LoadColumn(1), ColumnName("Column2")]
-            public bool Column2;
+            // [LoadColumn(1), ColumnName("Column2")]
+            // public bool Column2;
         }
 
         // Class resulting from ML.NET code including predictions about review
