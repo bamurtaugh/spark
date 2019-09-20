@@ -32,11 +32,11 @@ You'll also generate C# code you can use to consume your model in other .NET app
 
 ### 3. Add ML.NET to .NET for Apache Spark App
 
-Make sure you've downloaded the [Microsoft.ML NuGet Package](https://www.nuget.org/packages/Microsoft.ML). Your Spark app needs to reference the Microsoft.ML API and the .csproj file of your trained ML.NET model.
+Make sure you've downloaded the [Microsoft.ML NuGet Package](https://www.nuget.org/packages/Microsoft.ML). Either use Model Builder's "Add Projects" feature, or in a new C# console app, add a reference the Microsoft.ML API and the .csproj file of your trained ML.NET model.
 
 ![CSProject](https://github.com/bamurtaugh/spark/blob/SparkMLNet/examples/Microsoft.Spark.CSharp.Examples/MachineLearning/images/SparkMLPic.PNG)
 
-As we create the logic for our Spark app, we'll paste in the code generated from model builder and include some other class definitions.
+As we create the logic for our Spark app, we'll paste in the code generated from Model Builder and include some other class definitions.
 
 ## Spark.NET
 
@@ -110,3 +110,9 @@ DataFrame sqlDf = spark.Sql("SELECT _c0, MLudf(_c0) FROM Reviews");
 ```
 
 Run your code, and you'll be performing sentiment analysis with ML.NET and Spark.NET!
+
+## Alternative Approach: Real-Time Sentiment Analysis
+
+Rather than performing batch processing (analyzing data that's already been stored), we can adapt our Spark + ML.NET app to instead perform real-time processing with structured streaming.
+
+Checkout [SentimentAnalysisStream.cs](./SentimentAnalysisStream.cs) to see the adapted version of the sentiment analysis program that will determine the sentiment of text live as it's typed into a terminal.
